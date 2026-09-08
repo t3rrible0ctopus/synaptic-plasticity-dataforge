@@ -1,0 +1,633 @@
+{
+  "learn_then_forget": {
+    "name": "learn_then_forget",
+    "description": "cat/meow are paired repeatedly (learning), then a run of unrelated filler words plays (interference). Watch the cat-meow association rise, then decay.",
+    "sequence": [
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "car",
+      "tree",
+      "cloud",
+      "phone",
+      "shoe",
+      "lamp",
+      "rain",
+      "book"
+    ],
+    "tracked_pairs": [
+      "cat-meow"
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 0.0
+        }
+      },
+      {
+        "step": 1,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 3.6000000000000005
+        }
+      },
+      {
+        "step": 2,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 6.912000000000001
+        }
+      },
+      {
+        "step": 3,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 10.85904
+        }
+      },
+      {
+        "step": 4,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 14.490316800000002
+        }
+      },
+      {
+        "step": 5,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 18.056091456000004
+        }
+      },
+      {
+        "step": 6,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 21.336604139520002
+        }
+      },
+      {
+        "step": 7,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 24.410925808358403
+        }
+      },
+      {
+        "step": 8,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 27.239301743689737
+        }
+      },
+      {
+        "step": 9,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 29.855470104194552
+        }
+      },
+      {
+        "step": 10,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 32.26234499585899
+        }
+      },
+      {
+        "step": 11,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 34.48018552119027
+        }
+      },
+      {
+        "step": 12,
+        "symbol": "car",
+        "associations": {
+          "cat-meow": 32.52157536699505
+        }
+      },
+      {
+        "step": 13,
+        "symbol": "tree",
+        "associations": {
+          "cat-meow": 30.719654025135448
+        }
+      },
+      {
+        "step": 14,
+        "symbol": "cloud",
+        "associations": {
+          "cat-meow": 28.462032874999608
+        }
+      },
+      {
+        "step": 15,
+        "symbol": "phone",
+        "associations": {
+          "cat-meow": 26.185070244999643
+        }
+      },
+      {
+        "step": 16,
+        "symbol": "shoe",
+        "associations": {
+          "cat-meow": 24.090264625399676
+        }
+      },
+      {
+        "step": 17,
+        "symbol": "lamp",
+        "associations": {
+          "cat-meow": 22.1630434553677
+        }
+      },
+      {
+        "step": 18,
+        "symbol": "rain",
+        "associations": {
+          "cat-meow": 20.389999978938285
+        }
+      },
+      {
+        "step": 19,
+        "symbol": "book",
+        "associations": {
+          "cat-meow": 18.765048454744317
+        }
+      }
+    ],
+    "params": {
+      "n_neurons": 30,
+      "decay": 0.08,
+      "learning_rate": 0.4
+    }
+  },
+  "reinforced_control": {
+    "name": "reinforced_control",
+    "description": "CONTROL CASE: cat/meow are paired continuously with no interference at all. This isolates decay-from-disuse vs decay-from-interference -- association should stay high here, which is what makes the first preset's drop meaningful rather than just 'everything decays no matter what'.",
+    "sequence": [
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow"
+    ],
+    "tracked_pairs": [
+      "cat-meow"
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 0.0
+        }
+      },
+      {
+        "step": 1,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 3.6000000000000005
+        }
+      },
+      {
+        "step": 2,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 6.912000000000001
+        }
+      },
+      {
+        "step": 3,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 10.85904
+        }
+      },
+      {
+        "step": 4,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 14.490316800000002
+        }
+      },
+      {
+        "step": 5,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 18.056091456000004
+        }
+      },
+      {
+        "step": 6,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 21.336604139520002
+        }
+      },
+      {
+        "step": 7,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 24.410925808358403
+        }
+      },
+      {
+        "step": 8,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 27.239301743689737
+        }
+      },
+      {
+        "step": 9,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 29.855470104194552
+        }
+      },
+      {
+        "step": 10,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 32.26234499585899
+        }
+      },
+      {
+        "step": 11,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 34.48018552119027
+        }
+      },
+      {
+        "step": 12,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 36.520598804495044
+        }
+      },
+      {
+        "step": 13,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 38.39865793138544
+        }
+      },
+      {
+        "step": 14,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 40.12647232812461
+        }
+      },
+      {
+        "step": 15,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 41.71628129968715
+        }
+      },
+      {
+        "step": 16,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 43.17890555352468
+        }
+      },
+      {
+        "step": 17,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 44.52457479869584
+        }
+      },
+      {
+        "step": 18,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 45.762590504253296
+        }
+      },
+      {
+        "step": 19,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 46.90157868627632
+        }
+      },
+      {
+        "step": 20,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 47.94944781373749
+        }
+      },
+      {
+        "step": 21,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 48.91349084422932
+        }
+      },
+      {
+        "step": 22,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 49.80041043228181
+        }
+      },
+      {
+        "step": 23,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 50.61637731159698
+        }
+      },
+      {
+        "step": 24,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 51.36706684056693
+        }
+      },
+      {
+        "step": 25,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 52.057701421796
+        }
+      },
+      {
+        "step": 26,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 52.693085236526755
+        }
+      },
+      {
+        "step": 27,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 53.27763839972323
+        }
+      }
+    ],
+    "params": {
+      "n_neurons": 30,
+      "decay": 0.08,
+      "learning_rate": 0.4
+    }
+  },
+  "competing_associations": {
+    "name": "competing_associations",
+    "description": "Two separate pairs (cat/meow and dog/bark) are each learned, then filler interference plays. Shows that multiple associations can coexist in the same synapse matrix, and both degrade under interference -- there's no dedicated 'slot' protecting either one.",
+    "sequence": [
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "cat",
+      "meow",
+      "dog",
+      "bark",
+      "dog",
+      "bark",
+      "dog",
+      "bark",
+      "dog",
+      "bark",
+      "car",
+      "tree",
+      "cloud",
+      "phone",
+      "shoe",
+      "lamp"
+    ],
+    "tracked_pairs": [
+      "cat-meow",
+      "dog-bark"
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 0.0,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 1,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 3.6000000000000005,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 2,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 6.912000000000001,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 3,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 10.85904,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 4,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 14.490316800000002,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 5,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 18.056091456000004,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 6,
+        "symbol": "cat",
+        "associations": {
+          "cat-meow": 21.336604139520002,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 7,
+        "symbol": "meow",
+        "associations": {
+          "cat-meow": 24.410925808358403,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 8,
+        "symbol": "dog",
+        "associations": {
+          "cat-meow": 24.051801743689737,
+          "dog-bark": 0.0
+        }
+      },
+      {
+        "step": 9,
+        "symbol": "bark",
+        "associations": {
+          "cat-meow": 22.127657604194557,
+          "dog-bark": 3.9984375000000005
+        }
+      },
+      {
+        "step": 10,
+        "symbol": "dog",
+        "associations": {
+          "cat-meow": 20.75588249585899,
+          "dog-bark": 7.2785625000000005
+        }
+      },
+      {
+        "step": 11,
+        "symbol": "bark",
+        "associations": {
+          "cat-meow": 19.09541189619027,
+          "dog-bark": 11.295886875
+        }
+      },
+      {
+        "step": 12,
+        "symbol": "dog",
+        "associations": {
+          "cat-meow": 17.66738831949505,
+          "dog-bark": 14.892215925000002
+        }
+      },
+      {
+        "step": 13,
+        "symbol": "bark",
+        "associations": {
+          "cat-meow": 16.25399725393545,
+          "dog-bark": 18.450740994750003
+        }
+      },
+      {
+        "step": 14,
+        "symbol": "dog",
+        "associations": {
+          "cat-meow": 14.978579817370612,
+          "dog-bark": 21.699681715170005
+        }
+      },
+      {
+        "step": 15,
+        "symbol": "bark",
+        "associations": {
+          "cat-meow": 13.780293431980965,
+          "dog-bark": 24.7511827638939
+        }
+      },
+      {
+        "step": 16,
+        "symbol": "car",
+        "associations": {
+          "cat-meow": 12.946607750391237,
+          "dog-bark": 23.569000740438646
+        }
+      },
+      {
+        "step": 17,
+        "symbol": "tree",
+        "associations": {
+          "cat-meow": 12.179616923328688,
+          "dog-bark": 21.68348068120355
+        }
+      },
+      {
+        "step": 18,
+        "symbol": "cloud",
+        "associations": {
+          "cat-meow": 11.272432017704581,
+          "dog-bark": 19.94880222670727
+        }
+      },
+      {
+        "step": 19,
+        "symbol": "phone",
+        "associations": {
+          "cat-meow": 10.370637456288215,
+          "dog-bark": 18.35289804857069
+        }
+      },
+      {
+        "step": 20,
+        "symbol": "shoe",
+        "associations": {
+          "cat-meow": 9.540986459785158,
+          "dog-bark": 16.884666204685033
+        }
+      },
+      {
+        "step": 21,
+        "symbol": "lamp",
+        "associations": {
+          "cat-meow": 8.777707543002347,
+          "dog-bark": 15.583762445663748
+        }
+      }
+    ],
+    "params": {
+      "n_neurons": 30,
+      "decay": 0.08,
+      "learning_rate": 0.4
+    }
+  }
+}
