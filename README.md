@@ -1,7 +1,10 @@
 # Synaptic Plasticity DataForge
 
-## Synaptic Plasticity as Short-Term Memory
+## Live Interactive Demo
 
+**Demo:** https://synapticdataforge.vercel.app/
+
+The interactive educational experience is deployed publicly on Vercel and can be accessed without signing in.
 A small interactive and experimental model demonstrating how **changes in synaptic strength can act as a form of short-term associative memory**.
 
 The project asks:
