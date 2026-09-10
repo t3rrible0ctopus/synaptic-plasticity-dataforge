@@ -2,22 +2,23 @@
 
 ## Synaptic Plasticity as Short-Term Memory
 
-A small experimental model demonstrating how **changes in synaptic strength can act as a form of short-term memory**.
+A small interactive and experimental model demonstrating how **changes in synaptic strength can act as a form of short-term associative memory**.
 
-This project explores a simple question:
+The project asks:
 
-> Can a neural network remember which items recently occurred together by changing the strength of connections between neurons, without maintaining a separate memory slot for every association?
+> **Can a network remember which items recently occurred together by changing the strength of connections between neurons, without maintaining a separate memory slot for every association?**
 
-The project uses a deliberately small Hebbian memory model so that the complete process of **learning, interference, forgetting, and recall** can be observed directly.
+The model uses a deliberately small Hebbian memory system so that learning, recall, forgetting, interference, and representation capacity can be observed directly.
 
-This repository is part of the **DataForge 2026 Pathway Track** project on synaptic plasticity and short-term memory.
+This project was developed for the **DataForge 2026 Pathway Track**.
 
 ---
 
 ## Table of Contents
 
-* [Overview](#overview)
-* [Core Idea](#core-idea)
+* [Project Overview](#project-overview)
+* [Central Claim](#central-claim)
+* [Learning Objectives](#learning-objectives)
 * [How the Model Works](#how-the-model-works)
 * [Model Architecture](#model-architecture)
 * [Hebbian Learning](#hebbian-learning)
@@ -27,24 +28,27 @@ This repository is part of the **DataForge 2026 Pathway Track** project on synap
 * [Experimental Results](#experimental-results)
 * [Theoretical Comparison](#theoretical-comparison)
 * [Neuron Pool Sweep](#neuron-pool-sweep)
+* [Interactive Frontend](#interactive-frontend)
 * [Repository Structure](#repository-structure)
 * [Installation](#installation)
 * [Running the Model](#running-the-model)
-* [Running Individual Experiments](#running-individual-experiments)
+* [Running the Experiments](#running-the-experiments)
+* [Changing Model Parameters](#changing-model-parameters)
 * [Output Data](#output-data)
 * [Understanding the Results](#understanding-the-results)
-* [Relation to BDH](#relation-to-bdh)
+* [Relation to BDH and BDH-CQ](#relation-to-bdh-and-bdh-cq)
 * [Limitations](#limitations)
 * [Reproducibility](#reproducibility)
+* [AI Assistance and Provenance](#ai-assistance-and-provenance)
 * [References](#references)
 
 ---
 
-# Overview
+# Project Overview
 
-Synaptic plasticity is the ability of connections between neurons to change as a result of neural activity.
+Synaptic plasticity describes the ability of connections between neurons to change as a result of neural activity.
 
-In this project, those changing connections are treated as a temporary memory system.
+In this project, those changing connections are treated as a **temporary memory substrate**.
 
 Instead of storing an association such as:
 
@@ -52,34 +56,62 @@ Instead of storing an association such as:
 cat → meow
 ```
 
-inside a conventional lookup table, the model strengthens connections between the neurons activated by `cat` and the neurons activated by `meow`.
+inside a separate lookup table, the model strengthens connections between the neurons activated by `cat` and the neurons activated by `meow`.
 
-When the same association is reinforced, its connection strength increases.
+Repeated co-occurrence increases the relevant synaptic strength.
 
-When unrelated information is subsequently processed, the existing connection is weakened through decay and interference.
+Later activity can weaken the association through decay and interference.
 
-This produces a simple form of **short-term associative memory**.
-
-The project therefore demonstrates three related behaviors:
+The resulting system demonstrates three important behaviors:
 
 1. **Learning** — repeated co-occurrence strengthens an association.
-2. **Recall** — the association can be measured from the current synaptic weights.
-3. **Forgetting/interference** — later activity can weaken an association.
+2. **Recall** — the association is measured from the current synaptic state.
+3. **Forgetting/interference** — later activity can weaken a previously learned association.
 
-The report describes the central claim as a network retaining information about recently co-occurring items through synapse-strength changes rather than dedicated memory slots.
+The important idea is that the memory is represented by the **current values of the synaptic weight matrix**, rather than by a separate memory slot.
 
 ---
 
-# Core Idea
+# Central Claim
 
-The entire model can be summarized as:
+The central claim of the project is:
+
+> **A network can retain information about recently co-occurring items through changes in synaptic strength, without allocating a separate memory slot for every association, but the same mutable state that enables rapid learning also makes the memory vulnerable to interference.**
+
+The experiments are designed so that this claim can be tested directly.
+
+A learner can observe an association increase during repeated reinforcement and then decrease when unrelated activity is introduced.
+
+---
+
+# Learning Objectives
+
+After interacting with the project, a learner should be able to:
+
+* Explain what synaptic plasticity means computationally.
+* Describe how Hebbian updates can strengthen an association.
+* Explain why changing synaptic weights can function as short-term memory.
+* Distinguish learning from forgetting and interference.
+* Explain why continued reinforcement can preserve an association.
+* Understand why smaller neuron pools create more representation collisions.
+* Compare the simplified synaptic-memory mechanism with conventional context-based memory.
+* Explain how the concept relates to the memory mechanism described in BDH.
+* Identify the major limitations of the simplified model.
+
+---
+
+# How the Model Works
+
+The overall process is:
 
 ```text
-Input words
+Input word
     ↓
-Active neuron groups
+Fixed sparse neuron representation
     ↓
-Hebbian synaptic updates
+Recent activity trace
+    ↓
+Hebbian synaptic update
     ↓
 Synaptic weight matrix
     ↓
@@ -107,9 +139,9 @@ cat
 meow
 ```
 
-causes the connections between their active neurons to become stronger.
+strengthens the connections between the corresponding neuron groups.
 
-If the network then receives:
+If the network subsequently receives unrelated inputs:
 
 ```text
 car
@@ -122,19 +154,153 @@ rain
 book
 ```
 
-the previously strengthened `cat–meow` association becomes weaker.
+the previously learned association becomes weaker.
 
-The important point is that the memory is not stored in a separate data structure containing the relationship.
+The association is therefore not stored as:
 
-It is represented by the current values in the synaptic weight matrix.
+```text
+memory["cat"] = "meow"
+```
+
+Instead, it is represented by the changing values of the synaptic matrix.
 
 ---
 
-# How the Model Works
+# Model Architecture
 
-## 1. Words are converted into symbols
+The core memory mechanism is implemented in:
 
-The experiment uses a small fixed vocabulary.
+```text
+hebbian_core.py
+```
+
+The model contains:
+
+* A fixed neuron pool.
+* A synaptic weight matrix.
+* Sparse neuron activation.
+* A recent-activity trace.
+* Hebbian strengthening.
+* Continuous weight decay.
+* Association-strength measurement.
+* Optional weight-history export.
+
+The standard configuration is:
+
+| Parameter               | Default |
+| ----------------------- | ------: |
+| Number of neurons       |      30 |
+| Active neurons per word |       3 |
+| Decay                   |    0.08 |
+| Learning rate           |     0.4 |
+
+Therefore, the standard representation is:
+
+```text
+30 total neurons
+       ↓
+3 active neurons for each word
+```
+
+The sparse representation is intentional. It makes the model small enough that the state and its changes can be inspected directly.
+
+It is also conceptually related to the sparse activity discussed in the project's BDH context, but **it should not be interpreted as an exact implementation of BDH**.
+
+---
+
+# Hebbian Learning
+
+The learning mechanism follows the basic Hebbian idea:
+
+> Neurons that are repeatedly active together strengthen their connections.
+
+The model does not require two word representations to be active at exactly the same instant.
+
+Instead, the first activation contributes to a short recent-activity trace.
+
+Conceptually:
+
+```text
+A activates neurons
+        ↓
+recent activity trace
+        ↓
+B activates neurons
+        ↓
+connections A → B strengthened
+```
+
+This allows the model to represent an ordered relationship:
+
+```text
+A → B
+```
+
+rather than only simultaneous activation:
+
+```text
+A + B
+```
+
+The recent-activity trace is intentionally simplified and exists to make the short-term association mechanism visible.
+
+---
+
+# Short-Term Memory and Decay
+
+The memory is temporary because synaptic weights continuously decay.
+
+Conceptually:
+
+```text
+old weight
+    ↓
+decay
+    ↓
+smaller weight
+```
+
+If an association continues to receive reinforcement:
+
+```text
+reinforcement + decay
+        ↓
+association remains strong
+```
+
+If reinforcement stops:
+
+```text
+decay
+   ↓
+weaker synaptic connection
+   ↓
+lower association strength
+```
+
+This creates the central trade-off of the project:
+
+```text
+Synaptic plasticity
+        ↓
+Rapid adaptation
+        ↓
+Temporary memory
+        ↓
+But also
+        ↓
+Interference + limited capacity
+```
+
+---
+
+# Vocabulary and Representations
+
+The experiment layer is implemented in:
+
+```text
+experiments.py
+```
 
 The current vocabulary includes:
 
@@ -153,185 +319,11 @@ The current vocabulary includes:
 | `rain`  |        16 | Interference               |
 | `book`  |        17 | Interference               |
 
-The mapping is deliberately simple and fixed. The IDs are not learned from data.
+The mapping is **fixed and hand-designed**.
 
-The experiment layer converts these readable words into the integer IDs used by the core memory model.
+The model does not learn semantic word representations.
 
----
-
-# Model Architecture
-
-The core model is implemented in:
-
-```text
-hebbian_core.py
-```
-
-The model contains:
-
-* a fixed number of neurons
-* a synaptic weight matrix
-* sparse neuron activation
-* a recent-activity trace
-* Hebbian strengthening
-* weight decay
-* association-strength measurement
-* optional weight-history export
-
-The main experiment uses:
-
-```text
-Number of neurons = 30
-Active neurons per word = 3
-Decay = 0.08
-Learning rate = 0.4
-```
-
-The model therefore represents each word using a small subset of the total neuron pool.
-
-For the standard configuration:
-
-```text
-30 total neurons
-       ↓
-3 active neurons for each input word
-```
-
-This sparse representation is intentional and is also discussed in the project's model notes as being conceptually related to the sparse activity described for BDH. It should not, however, be interpreted as an exact implementation of BDH's neuron representation.
-
----
-
-# Hebbian Learning
-
-The learning mechanism is based on the basic idea commonly summarized as:
-
-> Neurons that are repeatedly active together strengthen their connections.
-
-In this project, when the neurons associated with one word are active shortly before another word, the connections between the corresponding neuron groups are strengthened.
-
-A simplified representation is:
-
-```text
-A activates neurons
-        ↓
-recent activity trace
-        ↓
-B activates neurons
-        ↓
-connections A → B strengthened
-```
-
-The model uses a short activity trace rather than requiring both groups of neurons to activate at exactly the same instant.
-
-This allows the model to represent a sequence such as:
-
-```text
-A → B
-```
-
-rather than only simultaneous activation:
-
-```text
-A + B
-```
-
-The project documentation describes this as the mechanism that allows the model to capture ordered recent activity.
-
----
-
-# Short-Term Memory and Decay
-
-The memory is temporary because synaptic weights are continuously decayed.
-
-At every processing step, the connections shrink slightly.
-
-Conceptually:
-
-```text
-old weight
-    ↓
-decay
-    ↓
-slightly smaller weight
-```
-
-If an association is repeatedly reinforced, learning can compensate for the decay:
-
-```text
-reinforcement + decay
-        ↓
-association remains strong
-```
-
-If the association is no longer reinforced:
-
-```text
-decay
-  ↓
-weaker connection
-  ↓
-lower recall strength
-```
-
-This is what makes the model a **short-term memory** rather than a permanent storage mechanism.
-
-The core implementation uses a decay parameter and applies the model's update rule every time a new symbol is processed.
-
----
-
-# Association Strength
-
-The model does not use a separate lookup table to answer:
-
-```text
-"Does cat mean meow?"
-```
-
-Instead, it directly measures the strength of the connections between the active neuron groups for the two words.
-
-Conceptually:
-
-```text
-cat neurons
-     ↓
-synaptic weight matrix
-     ↓
-meow neurons
-     ↓
-association strength
-```
-
-The code calculates association strength from the active neuron vectors and the synaptic weight matrix.
-
-This means that **storage and recall use the same underlying representation**: the synaptic weights.
-
----
-
-# Vocabulary and Representations
-
-The experiment layer is implemented in:
-
-```text
-experiments.py
-```
-
-It provides a readable interface over the lower-level Hebbian model.
-
-Instead of working directly with integer symbol IDs, experiments can be described using words such as:
-
-```python
-["cat", "meow", "car", "tree"]
-```
-
-The experiment system then:
-
-1. converts words to IDs
-2. feeds them to `HebbianMemory`
-3. records association strengths
-4. stores the strength at every step
-5. returns JSON-compatible experiment data
-
-This makes the results suitable for visualization and analysis rather than only printing a final number.
+The words simply provide readable labels for predetermined neuron representations.
 
 ---
 
@@ -343,7 +335,9 @@ The repository currently contains three main experimental presets.
 
 This is the main experiment.
 
-Sequence:
+### Learning phase
+
+The model repeatedly receives:
 
 ```text
 cat → meow
@@ -352,9 +346,13 @@ cat → meow
 cat → meow
 cat → meow
 cat → meow
+```
 
-then:
+### Interference phase
 
+It then receives:
+
+```text
 car
 tree
 cloud
@@ -365,29 +363,21 @@ rain
 book
 ```
 
-The first phase repeatedly reinforces:
-
-```text
-cat ↔ meow
-```
-
-The second phase introduces unrelated words.
-
 The expected behavior is:
 
 ```text
 Association strength
-       ↑
-       │       /\
-       │      /  \
-       │     /    \
-       │____/      \________
-       │
-       └────────────────────→ time
-             learning  interference
+        ↑
+        │        /\
+        │       /  \
+        │      /    \
+        │_____/      \________
+        │
+        └──────────────────────→ time
+             learning   interference
 ```
 
-The actual experiment records the association at every step rather than only measuring it before and after interference.
+The experiment records the association strength **at every step**, allowing the entire learning and forgetting trajectory to be visualized.
 
 ---
 
@@ -395,7 +385,7 @@ The actual experiment records the association at every step rather than only mea
 
 This is the control experiment.
 
-Sequence:
+The model continues receiving:
 
 ```text
 cat → meow
@@ -404,39 +394,37 @@ cat → meow
 ...
 ```
 
-The association continues to be reinforced and no unrelated interference is introduced.
+without introducing unrelated interference.
 
-This experiment is important because otherwise a decrease in association strength could simply be explained by natural decay over time.
+The purpose is to distinguish:
 
-The control asks:
+* natural decay over time
 
-> What happens if the memory continues to receive reinforcement?
+from:
 
-The expected result is that the association remains high.
+* weakening caused by interference.
 
-The repository documentation explicitly uses this control to distinguish **decay caused by interference** from simple decay caused by lack of reinforcement.
+If the association remains high under continued reinforcement, then the decrease in the main experiment cannot simply be attributed to the passage of additional processing steps.
 
 ---
 
 ## 3. `competing_associations`
 
-This experiment introduces two learned associations:
+This experiment stores two associations in the same synaptic matrix:
 
 ```text
 cat → meow
 ```
 
-and
+and:
 
 ```text
 dog → bark
 ```
 
-Both associations are stored in the same synaptic matrix.
+Both associations share the same network.
 
-After learning both pairs, unrelated filler words are introduced.
-
-The purpose is to demonstrate that there are no dedicated memory slots such as:
+There are no dedicated slots such as:
 
 ```text
 Memory Slot 1 = cat/meow
@@ -446,38 +434,38 @@ Memory Slot 2 = dog/bark
 Instead:
 
 ```text
-          Shared Synaptic Matrix
-        ┌─────────────────────────┐
-cat ───→│                         │←── meow
-dog ───→│                         │←── bark
-        │                         │
-        └─────────────────────────┘
+              Shared Synaptic Matrix
+        ┌─────────────────────────────┐
+cat ───→│                             │←── meow
+dog ───→│       shared weights        │←── bark
+        │                             │
+        └─────────────────────────────┘
 ```
 
-Because both associations share the same network, later activity can affect both.
+Later activity can therefore affect both associations.
 
-This demonstrates the trade-off between flexible synaptic memory and interference.
+This experiment demonstrates the trade-off between flexible synaptic memory and interference.
 
 ---
 
 # Experimental Results
 
-The exported experimental results reported in the project show:
+The exported experiments show the following behavior.
 
-### Main learning/forgetting experiment
+## Learning and interference
 
-The `cat–meow` association:
+For the `cat–meow` association:
 
 ```text
 After learning:       ~34.5
 After interference:   ~18.8
 ```
 
-The association therefore becomes substantially weaker after unrelated activity.
+The association becomes substantially weaker after unrelated activity.
 
-### Reinforced control
+## Reinforced control
 
-With continuous reinforcement and no interference:
+With continued reinforcement and no unrelated interference:
 
 ```text
 Association: ~53
@@ -485,9 +473,9 @@ Association: ~53
 
 The association remains strong.
 
-This supports the interpretation that the decrease in the main experiment is related to interference rather than simply the passage of additional processing steps.
+This provides a control against interpreting the decrease in the main experiment as simple time-based decay.
 
-### Competing associations
+## Competing associations
 
 Both:
 
@@ -500,16 +488,18 @@ can coexist in the same synaptic matrix.
 
 Both can subsequently weaken when interference is introduced.
 
-## These results are documented in the project's model notes and report.
+These results demonstrate that memory and interference arise from the same changing synaptic state.
+
+---
 
 # Theoretical Comparison
 
-The repository also includes a simplified theoretical model.
+The repository includes a simplified mathematical model for comparison with the actual simulation.
 
 The theoretical model assumes:
 
 1. Association strength decays by a fixed percentage at every step.
-2. A fixed amount is added whenever the tracked pair occurs.
+2. A fixed reinforcement amount is added when the tracked pair occurs.
 3. The pair is considered reinforced when the two words occur adjacently.
 
 Conceptually:
@@ -517,48 +507,46 @@ Conceptually:
 ```text
 If pair occurs:
 
-strength = strength × (1 - decay) + bump
+strength =
+    strength × (1 - decay) + bump
+```
 
 Otherwise:
 
-strength = strength × (1 - decay)
+```text
+strength =
+    strength × (1 - decay)
 ```
 
 This is intentionally simpler than the actual Hebbian simulation.
 
-The real model contains a multi-step activity trace, while the theoretical model treats reinforcement using a simpler adjacent-pair rule.
+The real model contains a multi-step activity trace, whereas the theoretical approximation uses a simpler adjacent-pair rule.
 
----
-
-# Why Compare Theory and Simulation?
-
-The comparison is not intended to prove that the simplified equation is the exact behavior of the neural model.
+The purpose of the comparison is therefore **not** to claim that the equation exactly describes the neural model.
 
 Instead, it asks:
 
-> How closely does a simple mathematical approximation describe the actual simulation?
+> How closely can a simple mathematical approximation describe the behavior of the full simulation?
 
-The repository fits the theoretical model's reinforcement "bump" using a coarse grid search and then calculates the mean squared error between the simulated and predicted curves.
-
-The bump is searched over:
+The reinforcement "bump" is fitted using a coarse grid search from:
 
 ```text
 0.5 → 20.0
 ```
 
-in increments of:
+with increments of:
 
 ```text
 0.5
 ```
 
-The best-fitting value is selected using least-squares mean squared error.
+The best value is selected using mean squared error.
 
 ---
 
 # Neuron Pool Sweep
 
-The project also investigates what happens when the neuron pool becomes smaller.
+The project also investigates how the size of the neuron pool affects the accuracy of the simplified theory.
 
 The default sweep includes:
 
@@ -577,163 +565,178 @@ neurons.
 
 The number of active neurons per word remains sparse.
 
-The reason for this experiment is important.
+### Larger neuron pool
 
-With a large neuron pool:
+With more neurons:
 
 ```text
 Word A → neurons 1, 4, 9
 Word B → neurons 12, 17, 25
 ```
 
-there is less chance that unrelated words accidentally use the same neurons.
+there is less chance that unrelated representations overlap.
 
-With a small neuron pool:
+### Smaller neuron pool
+
+With fewer neurons:
 
 ```text
 Word A → neurons 1, 4, 6
 Word B → neurons 1, 5, 6
 ```
 
-unrelated words can share neurons.
+different words are more likely to share neurons.
 
-This creates **representation collisions**.
-
-As a result, the simple theoretical assumption that each association behaves independently becomes less accurate.
-
-The repository specifically uses this sweep to study the relationship between neuron-pool size, representation collisions, and theoretical-model error.
+These **representation collisions** create additional interactions that the simplified theoretical model does not explicitly account for.
 
 ---
 
 # Neuron Pool Results
 
-The project reports approximately:
+The reported comparison is approximately:
 
 ```text
-30-neuron case:
+30 neurons
 MSE ≈ 1.4
+```
 
-8-neuron case:
+versus:
+
+```text
+8 neurons
 MSE ≈ 24.8
 ```
 
-Therefore, reducing the neuron pool from 30 to 8 can cause a large increase in the difference between the simplified theoretical model and the actual simulation.
+Therefore, reducing the neuron pool substantially increases the difference between the theoretical approximation and the actual simulation.
 
-The report describes this as approximately a 15–18× increase in MSE.
+This does **not** mean that the Hebbian memory mechanism stops working.
 
-Importantly, this does **not** mean that the Hebbian model stops working.
+Instead, it demonstrates that the simplified independent-association theory becomes less accurate when representations overlap.
 
-Instead, it shows that the simplified mathematical approximation does not capture the additional interactions created by overlapping neuron representations.
+---
+
+# Interactive Frontend
+
+The repository also contains a browser-based frontend:
+
+```text
+index.html
+style.css
+app.js
+```
+
+The frontend is designed to expose the model's behavior visually rather than only presenting final numerical results.
+
+The exported experiment data can be used to display:
+
+* Association-strength trajectories.
+* Learning behavior.
+* Interference and forgetting.
+* Reinforced control behavior.
+* Competing associations.
+* Neuron-pool sweep results.
+
+The Python experiment layer produces JSON-compatible data specifically so that the results can be consumed by a visualization/frontend layer.
 
 ---
 
 # Repository Structure
 
-The current repository contains the following main files:
-
 ```text
 synaptic-plasticity-dataforge/
 │
+├── README.md
 ├── MODEL_NOTES.md
-├── experiments.py
+│
 ├── hebbian_core.py
-├── neuron_sweep_export.json
-├── presets_export.json
-├── requirements.txt
+├── experiments.py
 ├── test-model.py
+│
+├── index.html
+├── app.js
+├── style.css
+│
+├── presets_export.json
+├── neuron_sweep_export.json
+│
+├── requirements.txt
 └── .gitignore
 ```
 
-The repository currently exposes these files on its main branch.
+### `hebbian_core.py`
 
----
+Core memory mechanism.
 
-## `hebbian_core.py`
+Responsible for:
 
-Contains the core memory mechanism.
+* Neuron representation.
+* Synaptic weight matrix.
+* Activity trace.
+* Hebbian updates.
+* Weight decay.
+* Association-strength calculation.
+* Weight-history export.
+* Basic forgetting demonstration.
 
-Responsibilities include:
+### `experiments.py`
 
-* neuron representation
-* synaptic weight matrix
-* activity trace
-* Hebbian updates
-* decay
-* association-strength calculation
-* history export
-* basic forgetting demonstration
+Higher-level experiment layer.
 
-The file also contains a direct demonstration that repeatedly presents two symbols and then introduces unrelated symbols to test whether the original association decreases.
+Responsible for:
 
----
+* Vocabulary.
+* Experiment presets.
+* Running experiments.
+* Tracking association strengths.
+* Per-step result generation.
+* Theoretical curves.
+* Theoretical-model fitting.
+* MSE calculation.
+* Neuron-pool sweeps.
+* JSON-compatible output.
 
-## `experiments.py`
+### `MODEL_NOTES.md`
 
-Contains the higher-level experiment layer.
+Detailed research and model notes covering:
 
-Responsibilities include:
+* Central claim.
+* Model mechanics.
+* Experimental results.
+* Theoretical validation.
+* Known limitations.
+* BDH relationship.
 
-* readable word vocabulary
-* experiment presets
-* running experiments
-* tracking association strengths
-* generating per-step results
-* theoretical curve generation
-* theoretical-model fitting
-* MSE calculation
-* neuron-pool sweeps
-* JSON-compatible result generation
+### `presets_export.json`
 
-The experiment layer is designed to provide data suitable for a frontend or visualization system.
+Exported experiment/preset information and result data.
 
----
+### `neuron_sweep_export.json`
 
-## `MODEL_NOTES.md`
+Exported neuron-pool sweep results.
 
-Contains the project's detailed model explanation and research handoff notes.
+This allows the frontend to use sweep results without rerunning every simulation.
 
-It documents:
+### `test-model.py`
 
-* the central claim
-* model mechanics
-* experimental results
-* theoretical validation
-* known limitations
-* relationship to BDH
+Test/demo entry point for checking the model.
 
-It is particularly useful when trying to understand what the project is intended to demonstrate and what should **not** be overclaimed.
+### `requirements.txt`
 
----
-
-## `presets_export.json`
-
-Contains exported experiment/preset information used to represent the experiment configurations and results.
-
----
-
-## `neuron_sweep_export.json`
-
-Contains exported neuron-pool sweep results.
-
-This allows the results of the sweep to be used without having to rerun every simulation.
-
----
-
-## `test-model.py`
-
-Provides a test/demo entry point for checking the model.
-
----
-
-## `requirements.txt`
-
-The current repository specifies:
+Current Python dependency:
 
 ```text
 numpy>=1.24
 ```
 
-as its dependency.
+### Frontend
+
+```text
+index.html
+app.js
+style.css
+```
+
+These provide the browser-based visualization layer.
 
 ---
 
@@ -746,47 +749,47 @@ git clone https://github.com/t3rrible0ctopus/synaptic-plasticity-dataforge.git
 cd synaptic-plasticity-dataforge
 ```
 
-Create a Python virtual environment if desired:
+Create a virtual environment if desired:
 
 ```bash
 python -m venv venv
 ```
 
-Activate it on macOS/Linux:
+### macOS / Linux
 
 ```bash
 source venv/bin/activate
 ```
 
-On Windows:
+### Windows
 
-```bash
+```powershell
 venv\Scripts\activate
 ```
 
-Install the dependency:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-The current dependency list contains NumPy 1.24 or newer.
+The current dependency list requires NumPy 1.24 or newer.
 
 ---
 
 # Running the Model
 
-The core demonstration can be run with:
+Run the core demonstration:
 
 ```bash
 python hebbian_core.py
 ```
 
-The basic demonstration performs two phases.
+The demonstration performs two phases.
 
 ### Phase 1 — Learning
 
-The model repeatedly presents:
+It repeatedly presents:
 
 ```text
 A → B
@@ -796,7 +799,7 @@ six times.
 
 ### Phase 2 — Interference
 
-It then presents:
+It then presents unrelated symbols:
 
 ```text
 10
@@ -809,31 +812,27 @@ It then presents:
 17
 ```
 
-as unrelated symbols.
+The model compares association strength before and after interference.
 
-The model compares the association strength before and after interference.
-
-If the association decreases, the experiment prints a supported result.
-
-It also exports the weight history to:
+The core demonstration also exports the weight history:
 
 ```text
 weight_history.json
 ```
 
-for visualization.
+when the corresponding export path is used by the implementation.
 
 ---
 
 # Running the Experiments
 
-The higher-level experiments can be executed from:
+Run the experiment layer with:
 
 ```bash
 python experiments.py
 ```
 
-The available experiment presets are:
+Available presets:
 
 ```text
 learn_then_forget
@@ -841,24 +840,11 @@ reinforced_control
 competing_associations
 ```
 
-These presets are defined directly in `experiments.py`.
-
 ---
 
 # Running a Preset Programmatically
 
-The main experiment interface is:
-
-```python
-run_preset(
-    name,
-    n_neurons=30,
-    decay=0.08,
-    learning_rate=0.4
-)
-```
-
-For example:
+The primary interface is:
 
 ```python
 from experiments import run_preset
@@ -868,7 +854,18 @@ data = run_preset("learn_then_forget")
 print(data)
 ```
 
-The returned object contains:
+The model parameters can also be supplied explicitly:
+
+```python
+data = run_preset(
+    "learn_then_forget",
+    n_neurons=30,
+    decay=0.08,
+    learning_rate=0.4
+)
+```
+
+The returned experiment data contains:
 
 ```text
 name
@@ -879,15 +876,15 @@ steps
 params
 ```
 
-Each step contains the input symbol and the current association strengths.
+Each step records the current input and association strengths.
 
-This makes it possible to plot the complete association-strength curve rather than only comparing two final values.
+This makes it possible to reconstruct the full association-strength curve rather than only comparing final values.
 
 ---
 
 # Changing Model Parameters
 
-The standard experiment uses:
+The standard configuration is:
 
 ```python
 n_neurons=30
@@ -895,9 +892,9 @@ decay=0.08
 learning_rate=0.4
 ```
 
-These can be changed when calling `run_preset`.
+These parameters can be changed when running a preset.
 
-For example:
+Example:
 
 ```python
 data = run_preset(
@@ -908,17 +905,23 @@ data = run_preset(
 )
 ```
 
-The three parameters have different effects.
-
-### `n_neurons`
+## `n_neurons`
 
 Controls the size of the neuron pool.
 
-Smaller values increase the probability of representation collisions.
+Smaller values:
 
-Larger values reduce accidental overlap between unrelated word representations.
+```text
+more representation collisions
+```
 
-### `decay`
+Larger values:
+
+```text
+less accidental overlap
+```
+
+## `decay`
 
 Controls how quickly synaptic weights weaken.
 
@@ -934,7 +937,7 @@ Lower decay:
 slower forgetting
 ```
 
-### `learning_rate`
+## `learning_rate`
 
 Controls the strength of the Hebbian update.
 
@@ -954,39 +957,37 @@ weaker reinforcement
 
 # Output Data
 
-The experiment runner produces data structured approximately as:
+Experiment results are structured approximately as:
 
 ```json
 {
-    "name": "learn_then_forget",
-    "description": "...",
-    "sequence": [
-        "cat",
-        "meow"
-    ],
-    "tracked_pairs": [
-        "cat-meow"
-    ],
-    "steps": [
-        {
-            "step": 0,
-            "symbol": "cat",
-            "associations": {
-                "cat-meow": 0.0
-            }
-        }
-    ],
-    "params": {
-        "n_neurons": 30,
-        "decay": 0.08,
-        "learning_rate": 0.4
+  "name": "learn_then_forget",
+  "description": "...",
+  "sequence": [
+    "cat",
+    "meow"
+  ],
+  "tracked_pairs": [
+    "cat-meow"
+  ],
+  "steps": [
+    {
+      "step": 0,
+      "symbol": "cat",
+      "associations": {
+        "cat-meow": 0.0
+      }
     }
+  ],
+  "params": {
+    "n_neurons": 30,
+    "decay": 0.08,
+    "learning_rate": 0.4
+  }
 }
 ```
 
-The exact association values depend on the model configuration and sequence.
-
-The important feature is that the model records the association at **every step**.
+The important feature is that association strength is recorded **at every step**.
 
 This allows the complete progression to be visualized:
 
@@ -1000,35 +1001,25 @@ Interference
 Decay
 ```
 
-The repository explicitly describes this per-step representation as being more useful for visualization than a single before/after value.
-
 ---
 
 # Understanding the Results
 
 ## Increasing association strength
 
-If the graph shows:
+If association strength increases during repeated:
 
 ```text
-0
- ↓
-10
- ↓
-20
- ↓
-30
+cat → meow
 ```
 
-during repeated `cat–meow` presentations, this represents learning.
+presentations, this represents learning.
 
-The repeated co-occurrence strengthens the relevant synaptic connections.
-
----
+The relevant synaptic connections are being strengthened.
 
 ## Decreasing association strength
 
-If the graph later shows:
+If the association later changes:
 
 ```text
 34
@@ -1040,33 +1031,31 @@ If the graph later shows:
 18
 ```
 
-during unrelated input, this represents interference/forgetting.
+during unrelated input, this represents interference and forgetting.
 
-The original association is no longer continuously reinforced while the model continues to update and decay its synaptic state.
-
----
+The original association is no longer continuously reinforced while the synaptic state continues to change and decay.
 
 ## Stable association
 
-If the association remains high while:
+If:
 
 ```text
 cat → meow
 ```
 
-continues to be repeated, that is the behavior expected from the reinforced control experiment.
+continues to be presented and the association remains high, this represents the expected behavior of the reinforced control.
 
-It demonstrates that the model is capable of maintaining an association when reinforcement continues.
+It demonstrates that continued reinforcement can maintain the learned association.
 
 ---
 
-# Relation to BDH
+# Relation to BDH and BDH-CQ
 
-The project is inspired by the idea that **synaptic plasticity can provide a mechanism for memory during inference**.
+The project is motivated by the broader idea that synaptic plasticity can provide a mechanism for memory during inference.
 
-Dragon Hatchling (BDH) describes a model in which information can be represented through changing synaptic state and Hebbian-style updates.
+Dragon Hatchling (BDH) provides a relevant architectural example in which information can be represented through changing synaptic state and Hebbian-style updates.
 
-The current project uses the same broad conceptual direction:
+The conceptual relationship is:
 
 ```text
 Input
@@ -1080,126 +1069,46 @@ Changed network state
 Later recall
 ```
 
-However, this repository is **not a BDH implementation**.
+However:
 
-It is a deliberately small educational model designed to make the underlying concept observable.
+> **This repository is not a BDH implementation.**
 
 The project uses:
 
-* a hand-designed word vocabulary
-* a small neuron pool
-* fixed sparse representations
-* simplified Hebbian dynamics
-* simplified decay
-* small-scale experiments
+* A hand-designed word vocabulary.
+* A small neuron pool.
+* Fixed sparse representations.
+* Simplified Hebbian dynamics.
+* Simplified decay.
+* Small-scale experiments.
 
-It does not reproduce BDH's scale, architecture, training procedure, or exact equations.
+It does **not** reproduce the scale, architecture, training procedure, or exact equations of BDH.
 
-The report explicitly makes this distinction and describes the implementation as an educational model rather than a BDH reproduction.
+The purpose of the BDH connection is to show how the same broad idea—using changing synaptic state as part of memory—appears in a current AI architecture.
 
----
-
-# Why This Model Is Useful
-
-The model is intentionally small.
-
-A large neural architecture can make it difficult to understand exactly where a memory is being stored.
-
-Here, the mechanism can be directly inspected:
-
-```text
-word
- ↓
-active neurons
- ↓
-synaptic matrix
- ↓
-association strength
-```
-
-This makes several concepts easy to demonstrate:
-
-### Learning
-
-Repeated activation changes the synaptic state.
-
-### Short-term memory
-
-The changed synaptic state persists temporarily.
-
-### Recall
-
-The current synaptic state determines the measured association.
-
-### Forgetting
-
-Unused connections decay.
-
-### Interference
-
-New activity can weaken previously learned associations.
-
-### Capacity limitations
-
-Smaller neuron pools produce more representation collisions.
-
----
-
-# Important Experimental Insight
-
-One of the most important findings is that **memory and interference are two sides of the same mechanism**.
-
-The same changing synaptic state that makes rapid learning possible also makes the memory vulnerable to later activity.
-
-In simplified form:
-
-```text
-Plasticity
-    │
-    ├── enables rapid learning
-    │
-    └── allows later activity to modify old memories
-                  ↓
-              interference
-```
-
-Therefore, the goal of the project is not to show that synaptic memory is universally better than conventional memory.
-
-Instead, it demonstrates a trade-off:
-
-```text
-Compact temporary memory
-          ↕
-Interference and limited capacity
-```
-
-This is consistent with the project's stated takeaway.
+BDH-CQ provides a related example involving inference-time recurrent memory and latent reasoning. It is included as research context rather than as a claim that this toy model reproduces BDH-CQ.
 
 ---
 
 # Limitations
 
-This project should be interpreted as a **toy educational model**, not as a biologically complete or production-scale neural architecture.
+This project should be interpreted as a **toy educational model**, not as a biologically complete simulation or production-scale AI architecture.
 
 ## 1. Small network
 
-The model uses only a small number of neurons.
-
-The main configuration uses:
+The main configuration uses only:
 
 ```text
 30 neurons
 ```
 
-This is far smaller than a biological neural network or modern AI model.
-
----
+This is extremely small compared with biological neural systems and modern AI models.
 
 ## 2. Hand-designed representations
 
-The word-to-neuron mapping is fixed rather than learned from data.
+The word-to-neuron mapping is fixed.
 
-Therefore, the model does not learn useful semantic representations of words.
+The model therefore does not learn semantic representations from data.
 
 For example:
 
@@ -1207,75 +1116,67 @@ For example:
 cat
 ```
 
-does not inherently contain semantic information about an animal.
+does not intrinsically encode animal-related meaning.
 
-It is simply mapped to a predetermined set of active neurons.
-
----
+It simply maps to a predetermined set of active neurons.
 
 ## 3. Simplified learning rule
 
-The Hebbian mechanism is designed to demonstrate the concept rather than reproduce the complete biological complexity of synaptic plasticity.
+The Hebbian mechanism is designed to demonstrate the concept rather than reproduce the full biological complexity of synaptic plasticity.
 
----
+## 4. Simplified activity trace
 
-## 4. Simplified trace
+The activity trace represents recent activity in a simplified way.
 
-The activity trace is a simplified representation of recent activity.
-
-It should not be interpreted as an exact reproduction of the mechanisms used in biological synapses or in BDH.
-
----
+It should not be interpreted as an exact reproduction of biological synaptic dynamics or BDH.
 
 ## 5. Fixed sparsity
 
 The number of active neurons per word is fixed by construction.
 
-The model therefore does not demonstrate sparsity emerging through training.
-
----
+The project therefore does not demonstrate sparsity emerging through training.
 
 ## 6. Representation collisions
 
 When the neuron pool becomes small, different words can share neurons.
 
-This can produce interactions that are not represented by the simplified theoretical model.
+This introduces interactions that are not fully represented by the simplified theoretical model.
 
-This limitation is actually useful experimentally because it demonstrates where the simplified theory stops accurately describing the full simulation.
+This limitation is also useful experimentally because it demonstrates where the simplified theory stops accurately describing the full simulation.
 
 ---
 
 # Reproducibility
 
-The primary experiment can be reproduced using the model parameters:
+The primary experiment can be reproduced using:
 
 ```text
-Neuron pool:    30
-Decay:          0.08
-Learning rate:  0.4
+Neuron pool: 30
+Decay:       0.08
+Learning rate: 0.4
+Preset:      learn_then_forget
 ```
 
-and the preset:
+The learning sequence is:
 
 ```text
-learn_then_forget
+cat
+meow
+cat
+meow
+cat
+meow
+cat
+meow
+cat
+meow
+cat
+meow
 ```
 
-The sequence is:
+followed by:
 
 ```text
-cat
-meow
-cat
-meow
-cat
-meow
-cat
-meow
-cat
-meow
-cat
-meow
 car
 tree
 cloud
@@ -1286,7 +1187,7 @@ rain
 book
 ```
 
-The control uses repeated:
+The reinforced control repeatedly presents:
 
 ```text
 cat
@@ -1295,7 +1196,7 @@ meow
 
 without unrelated interference.
 
-The competing-association experiment uses:
+The competing-associations experiment uses:
 
 ```text
 cat
@@ -1307,13 +1208,13 @@ bark
 interference
 ```
 
-The code stores the parameters alongside the generated experiment data, making it possible to identify which configuration produced a result.
+The experiment data stores the parameters used to generate each result so that the configuration can be identified alongside the output.
 
 ---
 
 # Project Takeaway
 
-The central result of the project is:
+The central result is:
 
 > **Synaptic changes can act as short-term memory.**
 
@@ -1341,27 +1242,38 @@ The project makes this trade-off observable through a small Hebbian model rather
 
 ---
 
+# AI Assistance and Provenance
+
+AI-assisted coding, writing, research, or design may have been used during development of the project.
+
+All generated or assisted components should be reviewed and understood by the project team before submission.
+
+The project should not claim that AI-generated or externally reused components were independently developed.
+
+Any reused code, data, graphics, fonts, libraries, or other third-party assets should be identified separately with their applicable licenses.
+
+The project team is responsible for understanding and defending the implementation and its results.
+
+---
+
 # References
 
-1. Kozachkov, L. et al. (2022). **Robust and brain-like working memory through short-term synaptic plasticity.** PLOS Computational Biology.
-   DOI: `10.1371/journal.pcbi.1010776`
+1. Kozachkov, L. et al. (2022). **Robust and brain-like working memory through short-term synaptic plasticity.** *PLOS Computational Biology*. DOI: `10.1371/journal.pcbi.1010776`
 
-2. Kosowski, A. et al. (2025). **The Dragon Hatchling: The Missing Link between the Transformer and Models of the Brain.**
-   arXiv: `2509.26507`
+2. Kosowski, A. et al. (2025). **The Dragon Hatchling: The Missing Link between the Transformer and Models of the Brain.** arXiv: `2509.26507`
 
-3. Engdahl, B. et al. (2026). **BDH-CQ: In-Context Learning with Recurrent Latent Reasoning.**
-   arXiv: `2608.09888`
+3. Engdahl, B. et al. (2026). **BDH-CQ: In-Context Learning with Recurrent Latent Reasoning.** arXiv: `2608.09888`
 
 4. **Synaptic Plasticity DataForge Project Repository.**
-   Contains the Hebbian memory implementation, experiment presets, model notes, and exported experimental data.
+   Contains the Hebbian memory implementation, experiment presets, model notes, frontend, and exported experimental data.
 
 ---
 
 # Project Status
 
-This repository currently represents a **small experimental/educational implementation** of synaptic plasticity as short-term memory.
+This repository currently represents a **small experimental and educational implementation of synaptic plasticity as short-term memory**.
 
-The model is intended to make the following mechanism easy to inspect:
+The intended mechanism is:
 
 ```text
 Co-occurrence
@@ -1377,6 +1289,8 @@ Interference / decay
 Forgetting
 ```
 
-It is intentionally not presented as a complete implementation of BDH or as a biologically exact simulation.
+The implementation is intentionally small enough for the learner to inspect the underlying state and reproduce the main behavior.
 
-The repository's current implementation and model notes should be treated as the authoritative description of the experiments and their parameters.
+It is **not presented as a complete BDH implementation or a biologically exact simulation**.
+
+The repository's implementation, model notes, and exported experimental data should be treated as the authoritative description of the current experiments and their parameters.
