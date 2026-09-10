@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synaptic Plasticity as Short-Term Memory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="eyebrow">DATAFORGE 2026 · EXPLAIN THE FRONTIER</div>
+    <h1>Synaptic Plasticity as Short-Term Memory</h1>
+    <p class="subtitle">
+        Watch a memory form in synaptic weights — then see how interference erodes it.
+    </p>
+</header>
+
+<main>
+
+    <section class="explanation">
+        <div>
+            <span class="label">THE IDEA</span>
+            <h2>Memory doesn't need a dedicated storage slot.</h2>
+            <p>
+                When <strong>cat</strong> and <strong>meow</strong> repeatedly occur together,
+                connections between active neurons strengthen. Later, unrelated activity
+                changes those same connections, causing the memory to fade.
+            </p>
+        </div>
+
+        <div class="mechanism">
+            <div>INPUT</div>
+            <span>→</span>
+            <div>ACTIVE NEURONS</div>
+            <span>→</span>
+            <div>SYNAPTIC WEIGHTS</div>
+            <span>→</span>
+            <div>MEMORY</div>
+        </div>
+    </section>
+
+    <section class="controls">
+        <div>
+            <span class="label">EXPERIMENT</span>
+            <h2 id="experimentTitle">Learning + Interference</h2>
+        </div>
+
+        <button id="playButton">
+            ▶ Play
+        </button>
+
+        <button id="resetButton">
+            ↻ Reset
+        </button>
+    </section>
+
+    <section class="sequence-panel">
+        <div class="panel-heading">
+            <div>
+                <span class="label">INPUT SEQUENCE</span>
+                <h2>What the network sees</h2>
+            </div>
+
+            <div class="step-display">
+                Step <span id="stepNumber">0</span>
+            </div>
+        </div>
+
+        <div id="sequence" class="sequence"></div>
+    </section>
+
+    <section class="visual-grid">
+
+        <div class="panel heatmap-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="label">LIVE SYNAPTIC STATE</span>
+                    <h2>30 × 30 Weight Matrix</h2>
+                    <p class="matrix-explanation">
+                        Each square represents one synaptic connection between two neurons.
+                        Brighter squares mean stronger connections. As the sequence plays,
+                        these weights change — this changing pattern is where the memory is stored.
+                    </p>
+                </div>
+
+                <div class="metric">
+                    <span>Current input</span>
+                    <strong id="currentWord">—</strong>
+                </div>
+            </div>
+
+            <canvas id="heatmap"></canvas>
+
+            <div class="heatmap-legend">
+                <span>Weak</span>
+                <div class="gradient"></div>
+                <span>Strong</span>
+            </div>
+        </div>
+
+        <div class="panel association-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <span class="label">MEMORY TRACE</span>
+                    <h2 id="associationTitle">Cat ↔ Meow Association</h2>
+                </div>
+
+                <div class="big-number" id="associationValue">
+                    0.00
+                </div>
+            </div>
+
+            <canvas id="chart"></canvas>
+
+            <div class="memory-status">
+                <div>
+                    <span class="label">REFERENCE</span>
+                    <strong>cat ↔ meow</strong>
+                </div>
+
+                <div>
+                    <span class="label">MODEL STATE</span>
+                    <strong id="memoryState">Not learned</strong>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="walkthrough">
+
+        <div class="walkthrough-card active">
+            <span>01</span>
+            <div>
+                <strong>Learn</strong>
+                <p>
+                    Repeated cat → meow pairs strengthen the same synaptic connections.
+                </p>
+            </div>
+        </div>
+
+        <div class="walkthrough-card">
+            <span>02</span>
+            <div>
+                <strong>Store</strong>
+                <p>
+                    The memory exists as changed values distributed across the weight matrix.
+                </p>
+            </div>
+        </div>
+
+        <div class="walkthrough-card">
+            <span>03</span>
+            <div>
+                <strong>Interfere</strong>
+                <p>
+                    Unrelated inputs modify and decay the existing synaptic state.
+                </p>
+            </div>
+        </div>
+
+        <div class="walkthrough-card">
+            <span>04</span>
+            <div>
+                <strong>Observe</strong>
+                <p>
+                    The cat–meow association falls instead of remaining permanently stored.
+                </p>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="sandbox">
+    <span class="label">SANDBOX</span>
+    <h2>Build your own sequence</h2>
+    <p>
+        Choose any words, in any order. The same synaptic mechanism will
+        run from scratch and you can watch the resulting memory form.
+    </p>
+
+    <div id="sandboxControls"></div>
+    </section>
+
+    <footer>
+        <p>
+            Toy Hebbian simulation inspired by brain-inspired synaptic memory mechanisms.
+            This is not a reproduction of BDH.
+        </p>
+    </footer>
+
+</main>
+
+<script src="app.js"></script>
+
+</body>
+</html>

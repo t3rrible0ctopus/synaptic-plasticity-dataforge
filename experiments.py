@@ -165,6 +165,7 @@ def run_preset(name: str, n_neurons: int = 30, decay: float = 0.08,
             "step": i,
             "symbol": NAME_BY_ID[symbol_id],
             "associations": assoc_snapshot,
+            "weights": mem.W.tolist()  # for debugging, not needed by frontend
         })
 
     return {
